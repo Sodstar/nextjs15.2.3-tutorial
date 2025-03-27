@@ -1,19 +1,92 @@
-import React, {use} from 'react'
-import { products } from '@/data/products'
+"use client";
+import React, { useState, useEffect, use } from "react";
+import { products } from "@/data/products";
+import IProduct, { ProductParams } from "@/types/Types";
 
-function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
-    const {id} = use(params);
-    const filteredProduct = products.filter((p)=>p.id==Number(id))
-    console.log(filteredProduct)
+ function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const filteredProduct = products.filter((p) => p.id == Number(id));
 
-    if(filteredProduct.length==0) return <div>Product not found</div>
+  const [counter, setCounter] = useState(0);
+  const [cartItems, setCartItem] = useState<IProduct[]>([]);
 
+  if (filteredProduct.length == 0) return <div>Product not found</div>;
+
+  useEffect(() => {
+
+    const fetchDogs = async () => {
+      const dogs = await fetch(`https://dogapi.dog/api/v2/breeds`);
+      console.log(dogs)
+    };
+
+    console.log("Counter Effected");
+
+
+    fetchDogs();
+  }, [counter]);
+
+
+  useEffect(() => {
+
+ 
+    console.log("Cart items Effected");
+
+
+  
+  }, [cartItems]);
+
+
+  const addToCart = (item: IProduct[]) => {
+    setCartItem(item);
+  };
+
+  const countingCart = (type: string) => {
+    if (type == "+") setCounter(counter + 1);
+    else {
+      if (counter < 1) return;
+      setCounter(counter - 1);
+    }
+  };
   return (
-    <div className='flex flex-col'><h1 className='text-4xl'>{filteredProduct[0].title} - {id}</h1> 
-    <img src={filteredProduct[0].image} className='rounded-lg w-1/2 mt-2' />
-    <button className='bg-amber-500 text-white w-28 rounded-2xl mt-4'>Add to cart </button> <span className='text-lg font-bold'>(0)</span>
+    <div className="flex flex-col">
+      <h1 className="text-4xl">
+        {filteredProduct[0].title} - {id}
+      </h1>
+      <img src={filteredProduct[0].image} className="rounded-lg w-1/2 mt-2" />
+      <button
+        className="bg-amber-500 text-white w-28 rounded-2xl mt-4"
+        onClick={() => {
+          addToCart(filteredProduct);
+          countingCart("+");
+          console.log(cartItems);
+        }}
+      >
+        Add to cart
+      </button>
+      <button
+        className="bg-pink-500 text-white w-28 rounded-2xl mt-4"
+        onClick={() => {
+          countingCart("-");
+        }}
+      >
+        Minus
+      </button>
+      <span className="text-lg font-bold">({counter})</span>
+
+      <div className="flex items-center justify-between w-full">
+        {cartItems.map((item) => (
+          <div key={item.id}>
+            <div>{item.id}</div>
+            <div>{item.title}</div>
+            <div>
+              <img src={item.image} className="w-33 h-33" />
+            </div>
+            <div>{item.price}</div>
+          </div>
+        ))}
+      </div>
     </div>
-  )
+  );
 }
 
-export default ProductDetail
+export default ProductDetail;
