@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <div>
       <div className="grid grid-cols-3">
-        <div className="col-span-1">hehe</div>
+        <div className="col-span-1">Siderbar</div>
         <div className="col-span-2"> {children}</div>
       </div>
     </div>
